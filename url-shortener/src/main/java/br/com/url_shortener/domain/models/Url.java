@@ -18,12 +18,16 @@ public class Url {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "sequential_id", nullable = false)
+    private Long sequentialId;
+
     public Url() {
     }
 
-    public Url(String shorterCode, String originalUrl) {
+    public Url(String shorterCode, String originalUrl, Long sequentialId) {
         this.shorterCode = shorterCode;
         this.originalUrl = originalUrl;
+        this.sequentialId = sequentialId;
         this.createdAt = LocalDateTime.now();
     }
 
