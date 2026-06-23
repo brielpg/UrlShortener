@@ -34,7 +34,7 @@ POST /api/shorten
 
 ```json
 {
-  "short_url": "https://sho.rt/abc12"
+  "shortCode": "xkXG8"
 }
 ```
 
@@ -255,7 +255,7 @@ Body:
 
 ```json
 {
-  "shortUrl": "https://api/abc12"
+  "shortCode": "xkXG8"
 }
 ```
 
