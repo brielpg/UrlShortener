@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, String> {
 
-    @Query("SELECT COALESCE(MAX(u.sequentialId), 0) FROM URL u")
+    @Query("SELECT COALESCE(MAX(u.sequentialId), 0) FROM Url u")
     Long findMaxSequentialId();
 }
