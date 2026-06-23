@@ -20,9 +20,9 @@ public class UrlController {
     }
 
     @PostMapping("/shorten")
-    public ResponseEntity<UrlResponse> createShortenUrl(@Valid @RequestBody UrlRequest dto){
-        String shortUrl = service.createShortUrl(dto.url());
-        return ResponseEntity.status(HttpStatus.CREATED).body(new UrlResponse(shortUrl));
+    public ResponseEntity<UrlResponse> createShortCode(@Valid @RequestBody UrlRequest dto){
+        String shortCode = service.createShortCode(dto.url());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new UrlResponse(shortCode));
     }
 
     @GetMapping("/{shortCode}")

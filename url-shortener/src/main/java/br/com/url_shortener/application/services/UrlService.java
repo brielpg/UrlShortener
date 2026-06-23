@@ -31,7 +31,7 @@ public class UrlService {
     }
 
     @Transactional
-    public String createShortUrl(String originalUrl) {
+    public String createShortCode(String originalUrl) {
         if (originalUrl == null || originalUrl.isBlank())
             throw new UrlRequiredException("URL is required");
 
