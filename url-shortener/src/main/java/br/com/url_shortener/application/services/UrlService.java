@@ -1,5 +1,7 @@
 package br.com.url_shortener.application.services;
 
+import br.com.url_shortener.domain.exceptions.UrlNotFoundException;
+import br.com.url_shortener.domain.exceptions.UrlRequiredException;
 import br.com.url_shortener.domain.models.Url;
 import br.com.url_shortener.infrastructure.repositories.UrlRepository;
 import jakarta.annotation.PostConstruct;
@@ -31,7 +33,7 @@ public class UrlService {
     @Transactional
     public String createShortUrl(String originalUrl) {
         if (originalUrl == null || originalUrl.isBlank())
-            throw new RuntimeException("URL is required");
+            throw new UrlRequiredException("URL is required");
 
         Long id = redisTemplate.opsForValue().increment(COUNTER_KEY);
         String shortCode = hashids.encode(id);
@@ -45,7 +47,7 @@ public class UrlService {
     @Transactional(readOnly = true)
     public String getOriginalUrl(String shorterCode) {
         return repository.findById(shorterCode)
-                .orElseThrow(() -> new RuntimeException("URL not found"))
+                .orElseThrow(() -> new UrlNotFoundException("URL not found"))
                 .getOriginalUrl();
     }
 }
