@@ -168,11 +168,7 @@ Total:
 | 4           | 14.776.336  |
 | 5           | 916.132.832 |
 
-Como o sistema precisa armazenar pelo menos:
-
-```text
-36.500.000 URLs
-```
+Como o sistema precisa armazenar pelo menos: `36.500.000 URLs`
 
 Temos:
 
@@ -184,27 +180,25 @@ Temos:
 62⁵ = 916.132.832 > 36.5mi
 ```
 
-Portanto, o tamanho mínimo do código encurtado deve ser:
-
-```text
-5 caracteres
-```
+Portanto, o tamanho mínimo do código encurtado deve ser: `5 caracteres`
 
 ---
 
 # Estratégia de Geração de IDs
 
-Para evitar colisões e simplificar a geração dos códigos:
+Para evitar colisões, simplificar a geração dos códigos e eliminar sequenciais:
 
-1. Utilizar um contador sequencial global.
-2. O contador será mantido no Redis através do comando `INCR`.
-3. Cada valor retornado será convertido para Base62.
+1. Utilizar um contador sequencial global no Redis através do comando `INCR`.
+2. O valor retornado será ofuscado com o **Hashids** usando um salt secreto, gerando um ID curto não previsível.
+3. O ID ofuscado será então convertido para Base62 para compor o código encurtado.
 4. O contador pode iniciar em `62⁴` para garantir códigos de 5 caracteres desde o primeiro registro.
 
 ### Exemplo
 
 ```text
 Redis INCR => 14.776.336
+Hashids    => "3kYp1"  (não sequencial, ofuscado pelo salt)                                                                   
+Base62     => mantém-se como "3kYp1
 ```
 
 Conversão:
@@ -261,7 +255,7 @@ Body:
 
 ```json
 {
-  "short_url": "https://sho.rt/abc12"
+  "shortUrl": "https://api/abc12"
 }
 ```
 
