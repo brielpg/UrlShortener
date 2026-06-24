@@ -47,7 +47,7 @@ Dado um código encurtado, o sistema deve redirecionar o usuário para a URL ori
 ### Exemplo
 
 ```http
-GET /api/{shorter_code}
+GET /api/{shortCode}
 ```
 
 **Resposta**
@@ -144,15 +144,10 @@ Como a proporção é de 10:1:
 
 # Estratégia de Geração dos Códigos
 
-Os códigos curtos utilizarão um alfabeto Base62:
+Os códigos curtos utilizam o alfabeto Base62:
 
 ```text
-[a-z] + [A-Z] + [0-9]
-```
-
-Total:
-
-```text
+[a-z] [A-Z] [0-9]
 26 + 26 + 10 = 62 caracteres
 ```
 
@@ -188,10 +183,10 @@ Portanto, o tamanho mínimo do código encurtado deve ser: `5 caracteres`
 
 Para evitar colisões, simplificar a geração dos códigos e eliminar sequenciais:
 
-1. Utilizar um contador sequencial global no Redis através do comando `INCR`.
-2. O valor retornado será ofuscado com o **Hashids** usando um salt secreto, gerando um ID curto não previsível.
-3. O ID ofuscado será então convertido para Base62 para compor o código encurtado.
-4. O contador pode iniciar em `62⁴` para garantir códigos de 5 caracteres desde o primeiro registro.
+1. Um contador sequencial global é mantido no Redis através do comando atômico `INCR`.
+2. O ID incremental é ofuscado com **Hashids** (configurado com um salt secreto e comprimento mínimo de 5 caracteres), que já produz uma string Base62.
+3. O shortCode resultante é persistido no PostgreSQL junto com o `sequential_id` original.
+4. Na inicialização da aplicação, o contador do Redis é bootstrapado a partir do maior `sequential_id` existente no banco (`COALESCE(MAX(sequential_id), 0)`), garantindo continuidade mesmo após um restart do Redis.
 
 ### Exemplo
 
@@ -200,6 +195,8 @@ Redis INCR => 14.776.336
 Hashids    => "3kYp1"  (não sequencial, ofuscado pelo salt)                                                                   
 Base62     => mantém-se como "3kYp1
 ```
+
+> O Hashids com `salt` e `minLength=5` garante que o código tenha exatamente 5 caracteres e não seja sequencialmente previsível.
 
 Conversão:
 
@@ -211,20 +208,17 @@ Conversão:
 
 # Modelo de Dados
 
-## Tabela URL
+## Tabela `tb_urls`
 
 ```sql
-CREATE TABLE urls (
-    shorter_code VARCHAR(5) PRIMARY KEY,
-    original_url TEXT NOT NULL,
-    created_at TIMESTAMP NOT NULL
+CREATE TABLE tb_urls (
+    shorter_code  VARCHAR(5)  PRIMARY KEY,
+    original_url  TEXT        NOT NULL,
+    sequential_id BIGINT      NOT NULL,
+    created_at    TIMESTAMP   NOT NULL
 );
-```
 
-### Índices
-
-```sql
-PRIMARY KEY (shorter_code)
+CREATE INDEX idx_tb_urls_sequential_id ON tb_urls (sequential_id);
 ```
 
 ---
@@ -266,7 +260,7 @@ Body:
 ### Request
 
 ```http
-GET /api/{shorter_code}
+GET /api/{shortCode}
 ```
 
 ### Response
@@ -313,10 +307,10 @@ Cliente
 POST /api/shorten
    |
    v
-Redis INCR
+Redis INCR  →  id sequencial
    |
    v
-Conversão Base62
+Hashids.encode(id)  →  shortCode (Base62)
    |
    v
 Persistência PostgreSQL
@@ -333,7 +327,7 @@ Retorna URL curta
 Cliente
    |
    v
-GET /{shorter_code}
+GET /api/{shortCode}
    |
    v
 Busca no PostgreSQL
@@ -344,3 +338,16 @@ Busca no PostgreSQL
    v
 URL Original
 ```
+
+---
+
+# Stack
+
+* Java 17
+* Spring Boot 4.1
+* Maven
+* Spring Data JPA / Hibernate
+* Hashids 1.0.3
+* PostgreSQL
+* Redis
+* Docker / Compose
