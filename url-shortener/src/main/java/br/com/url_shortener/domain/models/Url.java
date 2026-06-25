@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tb_urls")
+@Table(name = "tb_urls", indexes = {
+        @Index(name = "idx_tb_urls_sequential_id", columnList = "sequential_id")
+})
 public class Url {
 
     @Id
