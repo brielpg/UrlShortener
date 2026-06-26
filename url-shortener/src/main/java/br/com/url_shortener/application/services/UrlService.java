@@ -6,6 +6,7 @@ import br.com.url_shortener.domain.models.Url;
 import br.com.url_shortener.infrastructure.repositories.UrlRepository;
 import jakarta.annotation.PostConstruct;
 import org.hashids.Hashids;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,7 @@ public class UrlService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "url", key = "#shorterCode")
     public String getOriginalUrl(String shorterCode) {
         return repository.findById(shorterCode)
                 .orElseThrow(() -> new UrlNotFoundException("URL not found"))
