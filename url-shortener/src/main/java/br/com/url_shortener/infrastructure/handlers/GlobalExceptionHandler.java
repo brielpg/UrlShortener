@@ -1,6 +1,7 @@
 package br.com.url_shortener.infrastructure.handlers;
 
 import br.com.url_shortener.application.dtos.ErrorDto;
+import br.com.url_shortener.domain.exceptions.ShortCodeRequiredException;
 import br.com.url_shortener.domain.exceptions.UrlNotFoundException;
 import br.com.url_shortener.domain.exceptions.UrlRequiredException;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UrlRequiredException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorDto> handleUrlRequiredException(Exception ex) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        ErrorDto dto = new ErrorDto(httpStatus.value(), httpStatus.name(), ex.getMessage());
+        return ResponseEntity.status(httpStatus).body(dto);
+    }
+
+    @ExceptionHandler(ShortCodeRequiredException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDto> handleShortCodeRequiredException(Exception ex) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ErrorDto dto = new ErrorDto(httpStatus.value(), httpStatus.name(), ex.getMessage());
         return ResponseEntity.status(httpStatus).body(dto);
