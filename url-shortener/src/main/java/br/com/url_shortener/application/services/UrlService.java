@@ -1,5 +1,6 @@
 package br.com.url_shortener.application.services;
 
+import br.com.url_shortener.domain.exceptions.ShortCodeRequiredException;
 import br.com.url_shortener.domain.exceptions.UrlNotFoundException;
 import br.com.url_shortener.domain.exceptions.UrlRequiredException;
 import br.com.url_shortener.domain.models.Url;
@@ -48,6 +49,9 @@ public class UrlService {
     @Transactional(readOnly = true)
     @Cacheable(value = "url", key = "#shorterCode")
     public String getOriginalUrl(String shorterCode) {
+        if (shorterCode == null || shorterCode.isBlank())
+            throw new ShortCodeRequiredException("Short code is required");
+
         return repository.findById(shorterCode)
                 .orElseThrow(() -> new UrlNotFoundException("URL not found"))
                 .getOriginalUrl();
