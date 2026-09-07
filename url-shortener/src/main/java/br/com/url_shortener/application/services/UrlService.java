@@ -12,6 +12,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class UrlService {
     private static final String COUNTER_KEY = "url:counter";
@@ -28,7 +30,8 @@ public class UrlService {
 
     @PostConstruct
     public void initCounter() {
-        Long maxId = repository.findMaxSequentialId();
+        Long maxId = Optional.ofNullable(repository.findMaxSequentialId())
+                .orElse(0L);
         redisTemplate.opsForValue().setIfAbsent(COUNTER_KEY, String.valueOf(maxId));
     }
 

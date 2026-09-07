@@ -16,7 +16,8 @@ import org.springframework.data.redis.core.ValueOperations;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +38,38 @@ class UrlServiceTest {
 
     @InjectMocks
     private UrlService urlService;
+
+    @Test
+    public void initCounterShouldUseMaxIdWhenExists() {
+        Long maxId = 14776336L;
+
+        when(repository.findMaxSequentialId())
+                .thenReturn(maxId);
+
+        when(redisTemplate.opsForValue())
+                .thenReturn(valueOperations);
+
+        urlService.initCounter();
+
+        verify(repository).findMaxSequentialId();
+        verify(valueOperations).setIfAbsent(COUNTER_KEY, String.valueOf(maxId));
+    }
+
+    @Test
+    public void initCounterShouldUseZeroWhenMaxIdIsNull() {
+        Long maxId = null;
+
+        when(repository.findMaxSequentialId())
+                .thenReturn(maxId);
+
+        when(redisTemplate.opsForValue())
+                .thenReturn(valueOperations);
+
+        urlService.initCounter();
+
+        verify(repository).findMaxSequentialId();
+        verify(valueOperations).setIfAbsent(COUNTER_KEY, String.valueOf(0L));
+    }
 
     @Test
     void createShortCodeShouldReturnSuccess() {
