@@ -40,7 +40,7 @@ class UrlServiceTest {
     private UrlService urlService;
 
     @Test
-    public void initCounterShouldUseMaxIdWhenExists() {
+    void initCounterShouldUseMaxIdWhenExists() {
         Long maxId = 14776336L;
 
         when(repository.findMaxSequentialId())
@@ -56,7 +56,7 @@ class UrlServiceTest {
     }
 
     @Test
-    public void initCounterShouldUseZeroWhenMaxIdIsNull() {
+    void initCounterShouldUseZeroWhenMaxIdIsNull() {
         Long maxId = null;
 
         when(repository.findMaxSequentialId())
