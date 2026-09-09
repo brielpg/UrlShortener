@@ -62,6 +62,32 @@ class UrlControllerIntegrationTest {
     }
 
     @Test
+    void createShortCodeShouldReturn400BadRequestWithInvalidUrl() throws Exception {
+        String requestBody = """
+                {
+                    "url": "invalid-url"
+                }
+                """;
+
+        ResultActions result = mockMvc.perform(
+                post("/api/shorten")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+        );
+
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createShortCodeShouldReturn500InternalServerErrorWithNoBody() throws Exception {
+        ResultActions result = mockMvc.perform(
+                post("/api/shorten")
+        );
+
+        result.andExpect(status().isInternalServerError());
+    }
+
+    @Test
     void getOriginalUrlShouldReturn308PermanentRedirect() throws Exception {
         String shortCode = "3kYp1";
         String originalUrl = "https://www.exemplo.com";
