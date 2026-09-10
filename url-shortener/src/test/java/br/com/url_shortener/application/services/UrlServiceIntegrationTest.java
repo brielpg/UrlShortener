@@ -109,6 +109,7 @@ class UrlServiceIntegrationTest {
 
     @Test
     void createShortCodeShouldIncrementCounter() {
+        urlService.initCounter();
         assertEquals("0", redisTemplate.opsForValue().get(COUNTER_KEY));
         urlService.createShortCode("https://www.test1.com");
         assertEquals("1", redisTemplate.opsForValue().get(COUNTER_KEY));
