@@ -46,7 +46,7 @@ class UrlControllerIntegrationTest {
     void createShortCodeShouldReturn201Created() throws Exception {
         String requestBody = """
                 {
-                    "url": "https://www.exemplo.com"
+                    "url": "https://www.test.com"
                 }
                 """;
 
@@ -90,7 +90,7 @@ class UrlControllerIntegrationTest {
     @Test
     void getOriginalUrlShouldReturn308PermanentRedirect() throws Exception {
         String shortCode = "3kYp1";
-        String originalUrl = "https://www.exemplo.com";
+        String originalUrl = "https://www.test.com";
         Url url = new Url(shortCode, originalUrl, 14776336L);
         urlRepository.save(url);
 

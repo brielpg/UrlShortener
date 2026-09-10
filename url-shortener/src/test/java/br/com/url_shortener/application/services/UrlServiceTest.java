@@ -73,7 +73,7 @@ class UrlServiceTest {
 
     @Test
     void createShortCodeShouldReturnSuccess() {
-        String originalUrl = "https://www.exemplo.com";
+        String originalUrl = "https://www.test.com";
         Long redisReturnId = 14776336L;
         String expectedShortCode = "3kYp1";
 
@@ -118,7 +118,7 @@ class UrlServiceTest {
     @Test
     void getOriginalUrlShouldReturnSuccess() {
         String shortCode = "3kYp1";
-        Url url = new Url(shortCode, "https://www.exemplo.com", 14776336L);
+        Url url = new Url(shortCode, "https://www.test.com", 14776336L);
 
         when(repository.findById(shortCode))
                 .thenReturn(Optional.of(url));
