@@ -32,5 +32,5 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: ./mvnw clean verify
+        run: sh mvnw clean verify
         working-directory: url-shortener
