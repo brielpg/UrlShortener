@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_urls", indexes = {
-        @Index(name = "idx_tb_urls_sequential_id", columnList = "sequential_id")
+        @Index(name = "idx_tb_urls_sequential_id", columnList = "sequential_id", unique = true)
 })
 public class Url {
 

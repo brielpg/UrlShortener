@@ -214,11 +214,11 @@ Conversão:
 CREATE TABLE tb_urls (
     shorter_code  VARCHAR(5)  PRIMARY KEY,
     original_url  TEXT        NOT NULL,
-    sequential_id BIGINT      NOT NULL,
+    sequential_id BIGINT      NOT NULL UNIQUE,
     created_at    TIMESTAMP   NOT NULL
 );
 
-CREATE INDEX idx_tb_urls_sequential_id ON tb_urls (sequential_id);
+CREATE UNIQUE INDEX idx_tb_urls_sequential_id ON tb_urls (sequential_id);
 ```
 
 ---
