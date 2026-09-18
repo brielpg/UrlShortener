@@ -13,6 +13,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - url-shortener
 
   redis-master:
     image: redis:7-alpine
@@ -25,6 +27,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - url-shortener
 
   redis-replica:
     image: redis:7-alpine
@@ -33,6 +37,8 @@ services:
     depends_on:
       redis-master:
         condition: service_healthy
+    networks:
+      - url-shortener
 
   redis-sentinel:
     image: redis:7-alpine
@@ -40,9 +46,14 @@ services:
     depends_on:
       redis-master:
         condition: service_healthy
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
     volumes:
-      - ./sentinel.conf:/etc/redis/sentinel.conf
+      - ./sentinel-entrypoint.sh:/usr/local/bin/sentinel-entrypoint.sh:ro
+    entrypoint: [ "/bin/sh", "/usr/local/bin/sentinel-entrypoint.sh" ]
     command: redis-server /etc/redis/sentinel.conf --sentinel
+    networks:
+      - url-shortener
 
   app:
     build:
@@ -58,6 +69,11 @@ services:
       - .env
     ports:
       - "8080:8080"
+    networks:
+      - url-shortener
 
 volumes:
   postgres_data:
+
+networks:
+  url-shortener:
