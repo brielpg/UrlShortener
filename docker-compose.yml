@@ -13,10 +13,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - url-shortener
 
-  redis:
+  redis-master:
     image: redis:7-alpine
-    container_name: url-shortener-redis
+    container_name: url-shortener-redis-master
     environment:
       - REDISCLI_AUTH=${REDIS_PASSWORD}
     command: redis-server --requirepass ${REDIS_PASSWORD}
@@ -25,6 +27,33 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - url-shortener
+
+  redis-replica:
+    image: redis:7-alpine
+    container_name: url-shortener-redis-replica
+    command: redis-server --replicaof redis-master 6379 --requirepass ${REDIS_PASSWORD} --masterauth ${REDIS_PASSWORD}
+    depends_on:
+      redis-master:
+        condition: service_healthy
+    networks:
+      - url-shortener
+
+  redis-sentinel:
+    image: redis:7-alpine
+    container_name: url-shortener-redis-sentinel
+    depends_on:
+      redis-master:
+        condition: service_healthy
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - ./sentinel-entrypoint.sh:/usr/local/bin/sentinel-entrypoint.sh:ro
+    entrypoint: [ "/bin/sh", "/usr/local/bin/sentinel-entrypoint.sh" ]
+    command: redis-server /etc/redis/sentinel.conf --sentinel
+    networks:
+      - url-shortener
 
   app:
     build:
@@ -34,12 +63,17 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
+      redis-master:
         condition: service_healthy
     env_file:
       - .env
     ports:
-        - "8080:8080"
+      - "8080:8080"
+    networks:
+      - url-shortener
 
 volumes:
   postgres_data:
+
+networks:
+  url-shortener:
