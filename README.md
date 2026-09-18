@@ -184,16 +184,16 @@ Portanto, o tamanho mínimo do código encurtado deve ser: `5 caracteres`
 Para evitar colisões, simplificar a geração dos códigos e eliminar sequenciais:
 
 1. Um contador sequencial global é mantido no Redis através do comando atômico `INCR`.
-2. O ID incremental é ofuscado com **Hashids** (configurado com um salt secreto e comprimento mínimo de 5 caracteres), que já produz uma string Base62.
-3. O shortCode resultante é persistido no PostgreSQL junto com o `sequential_id` original.
-4. Na inicialização da aplicação, o contador do Redis é bootstrapado a partir do maior `sequential_id` existente no banco (`COALESCE(MAX(sequential_id), 0)`), garantindo continuidade mesmo após um restart do Redis.
+2. O `sequential_id` inicia em 0 e é bootstrapado na inicialização da aplicação a partir do maior valor existente no PostgreSQL `(COALESCE(MAX(sequential_id), 0))`, garantindo continuidade mesmo após um restart do Redis.
+3. O `sequential_id` é ofuscado com **Hashids** (configurado com um salt secreto e `minLength=5`).
+4. O Hashids utiliza um algoritmo de shuffling baseado no salt para converter o número em uma string de caracteres Base62.
+5. Devido ao `minLength=5`, todo shortCode gerado terá exatamente 5 caracteres, independente do valor do `sequential_id` (garantido pelo padding automático).
 
 ### Exemplo
 
 ```text
 Redis INCR => 14.776.336
-Hashids    => "3kYp1"  (não sequencial, ofuscado pelo salt)                                                                   
-Base62     => mantém-se como "3kYp1
+Hashids    => "3kYp1"  (não sequencial, ofuscado com base no salt e alfabeto alfanumérico)
 ```
 
 > O Hashids com `salt` e `minLength=5` garante que o código tenha exatamente 5 caracteres e não seja sequencialmente previsível.
