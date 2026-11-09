@@ -21,7 +21,7 @@ Dado uma URL original, o sistema deve gerar e retornar uma URL encurtada.
 **Entrada**
 
 ```http
-POST /api/shorten
+POST /api/v1/shorten
 ```
 
 ```json
@@ -47,7 +47,7 @@ Dado um código encurtado, o sistema deve redirecionar o usuário para a URL ori
 ### Exemplo
 
 ```http
-GET /api/{shortCode}
+GET /api/v1/{shortCode}
 ```
 
 **Resposta**
@@ -230,7 +230,7 @@ CREATE UNIQUE INDEX idx_tb_urls_sequential_id ON tb_urls (sequential_id);
 ### Request
 
 ```http
-POST /api/shorten
+POST /api/v1/shorten
 ```
 
 Body:
@@ -260,7 +260,7 @@ Body:
 ### Request
 
 ```http
-GET /api/{shortCode}
+GET /api/v1/{shortCode}
 ```
 
 ### Response
@@ -304,7 +304,7 @@ Location: https://www.exemplo.com
 Cliente
    |
    v
-POST /api/shorten
+POST /api/v1/shorten
    |
    v
 Redis INCR  →  id sequencial
@@ -327,7 +327,7 @@ Retorna URL curta
 Cliente
    |
    v
-GET /api/{shortCode}
+GET /api/v1/{shortCode}
    |
    v
 Busca no PostgreSQL
