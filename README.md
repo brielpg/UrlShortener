@@ -8,6 +8,11 @@ Este projeto implementa um serviço de encurtamento de URLs com suporte a:
 * Redirecionamento de URLs curtas para suas respectivas URLs originais.
 * Alta disponibilidade e capacidade de armazenamento para operação contínua durante 10 anos.
 
+> **Documentação Interativa (Scalar/OpenAPI):**
+> - **Scalar UI:** `/docs`
+> - **OpenAPI JSON:** `/v3/api-docs`
+> - **OpenAPI YAML:** `/v3/api-docs.yaml`
+
 ---
 
 # Requisitos Funcionais
