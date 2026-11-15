@@ -51,7 +51,7 @@ class UrlControllerIntegrationTest {
                 """;
 
         ResultActions result = mockMvc.perform(
-                post("/api/shorten")
+                post("/api/v1/shorten")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
         );
@@ -70,7 +70,7 @@ class UrlControllerIntegrationTest {
                 """;
 
         ResultActions result = mockMvc.perform(
-                post("/api/shorten")
+                post("/api/v1/shorten")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
         );
@@ -81,7 +81,7 @@ class UrlControllerIntegrationTest {
     @Test
     void createShortCodeShouldReturn500InternalServerErrorWithNoBody() throws Exception {
         ResultActions result = mockMvc.perform(
-                post("/api/shorten")
+                post("/api/v1/shorten")
         );
 
         result.andExpect(status().isInternalServerError());
@@ -95,7 +95,7 @@ class UrlControllerIntegrationTest {
         urlRepository.save(url);
 
         ResultActions result = mockMvc.perform(
-                get("/api/{shortCode}", shortCode)
+                get("/api/v1/{shortCode}", shortCode)
         );
 
         result.andExpect(status().isPermanentRedirect())
@@ -105,7 +105,7 @@ class UrlControllerIntegrationTest {
     @Test
     void getOriginalUrlShouldReturn404NotFound() throws Exception {
         ResultActions result = mockMvc.perform(
-                get("/api/{shortcode}", "not-found")
+                get("/api/v1/{shortcode}", "not-found")
         );
 
         result.andExpect(status().isNotFound());
